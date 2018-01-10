@@ -1,11 +1,11 @@
 ﻿/*
  * QUANTCONNECT.COM - Democratizing Finance, Empowering Individuals.
  * Lean Algorithmic Trading Engine v2.0. Copyright 2014 QuantConnect Corporation.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); 
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,7 +20,7 @@ using System.Threading;
 using QuantConnect.Logging;
 using QuantConnect.Orders;
 
-namespace QuantConnect.Securities 
+namespace QuantConnect.Securities
 {
     /// <summary>
     /// Algorithm Transactions Manager - Recording Transactions
@@ -43,7 +43,7 @@ namespace QuantConnect.Securities
         {
             get { return _securities.UtcTime; }
         }
-        
+
         /// <summary>
         /// Initialise the transaction manager for holding and processing orders.
         /// </summary>
@@ -75,9 +75,9 @@ namespace QuantConnect.Securities
         /// Configurable minimum order value to ignore bad orders, or orders with unrealistic sizes
         /// </summary>
         /// <remarks>Default minimum order size is $0 value</remarks>
-        public decimal MinimumOrderSize 
+        public decimal MinimumOrderSize
         {
-            get 
+            get
             {
                 return _minimumOrderSize;
             }
@@ -87,9 +87,9 @@ namespace QuantConnect.Securities
         /// Configurable minimum order size to ignore bad orders, or orders with unrealistic sizes
         /// </summary>
         /// <remarks>Default minimum order size is 0 shares</remarks>
-        public int MinimumOrderQuantity 
+        public int MinimumOrderQuantity
         {
-            get 
+            get
             {
                 return _minimumOrderQuantity;
             }
@@ -158,7 +158,7 @@ namespace QuantConnect.Securities
         }
 
         /// <summary>
-        /// Added alias for RemoveOrder - 
+        /// Added alias for RemoveOrder -
         /// </summary>
         /// <param name="orderId">Order id we wish to cancel</param>
         /// <param name="orderTag">Tag to indicate from where this method was called</param>
@@ -258,6 +258,16 @@ namespace QuantConnect.Securities
         }
 
         /// <summary>
+        /// Get a list of open orders satisfying the filter.
+        /// </summary>
+        /// <returns>List of open orders.</returns>
+        public List<Order> GetOpenOrders(Func<Order, bool> filter)
+        {
+            filter = filter ?? (x => true);
+            return _orderProcessor.GetOrders(x => x.Status.IsOpen() && filter(x)).ToList();
+        }
+
+        /// <summary>
         /// Gets the current number of orders that have been processed
         /// </summary>
         public int OrdersCount
@@ -334,7 +344,7 @@ namespace QuantConnect.Securities
                         Quantity = option.Symbol.ID.OptionRight == OptionRight.Call ? quantity : -quantity
                     };
 
-                    // we continue with this call for underlying 
+                    // we continue with this call for underlying
                     return GetSufficientCapitalForOrder(portfolio, newOrder);
                 }
 
